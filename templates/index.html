@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Fan Controller Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; color: #333; text-align: center; padding: 40px 20px; }
+        .card { background: white; max-width: 450px; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; font-size: 24px; margin-bottom: 20px; }
+        .status-box { font-size: 18px; font-weight: bold; background: #eef2f7; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #34495e; border-left: 5px solid #3498db; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        button { background-color: #3498db; color: white; border: none; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; }
+        button:hover { background-color: #2980b9; transform: translateY(-1px); }
+        button.danger { background-color: #e74c3c; }
+        button.danger:hover { background-color: #c0392b; }
+        .timer-section { display: flex; gap: 8px; margin-top: 15px; }
+        .timer-section input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+        .history-box { text-align: left; background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 8px; font-family: monospace; overflow-y: auto; margin-top: 25px; max-height: 150px;}
+        .history-title { font-weight: bold; margin-bottom: 8px; color: #bdc3c7; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🌀 Fan Control Panel</h1>
+    
+    <div class="status-box" id="statusDisplay">Loading fan status...</div>
+
+    <div class="grid">
+        <button onclick="sendAction('/turn-on')">🔌 Turn ON</button>
+        <button class="danger" onclick="sendAction('/turn-off')">🛑 Turn OFF</button>
+        <button onclick="sendAction('/increase-speed')">⚡ Speed +</button>
+        <button onclick="sendAction('/decrease-speed')">📉 Speed -</button>
+    </div>
+
+    <div class="timer-section">
+        <input type="number" id="timerInput" placeholder="Minutes (e.g., 5)" min="0.1" step="0.1">
+        <button onclick="setTimer()">⏰ Set Timer</button>
+    </div>
+
+    <div class="history-title" style="margin-top: 20px; text-align: left;">📋 Action History:</div>
+    <div class="history-box" id="historyDisplay">No actions tracked yet.</div>
+</div>
+
+<script>
+    async function updateDashboard() {
+        try {
+            const statusRes = await fetch('/status');
+            const statusData = await statusRes.json();
+            document.getElementById('statusDisplay').innerText = statusData.status;
+
+            const historyRes = await fetch('/history');
+            const historyData = await historyRes.json();
+            const historyBox = document.getElementById('historyDisplay');
+            
+            if (!historyData.action_history || historyData.action_history.length === 0) {
+                historyBox.innerText = "No actions tracked yet.";
+            } else {
+                historyBox.innerHTML = historyData.action_history.map((msg, i) => `[${i+1}] ${msg}`).join('<br>');
+            }
+        } catch (err) {
+            console.error("Error updating dashboard:", err);
+        }
+    }
+
+    async function sendAction(route) {
+        await fetch(route, { method: 'POST' });
+        updateDashboard();
+    }
+
+    async function setTimer() {
+        const mins = document.getElementById('timerInput').value;
+        if (!mins) return alert("Please enter a duration!");
+        
+        await fetch(`/set-timer?minutes=${mins}`, { method: 'POST' });
+        document.getElementById('timerInput').value = '';
+        updateDashboard();
+    }
+
+    updateDashboard();
+    setInterval(updateDashboard, 3000);
+</script>
+
+</body>
+</html>
