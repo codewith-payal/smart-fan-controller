@@ -1,0 +1,31 @@
+{
+    "speed": 1,
+    "is_on": true,
+    "actions": [
+        "Fan has turned on.",
+        "Fan speed is 2",
+        "Fan speed is 3",
+        "Fan speed is 4",
+        "Fan speed is 5",
+        "Fan is already at maximum speed.",
+        "Fan is already at maximum speed.",
+        "Fan is already at maximum speed.",
+        "Fan is already at maximum speed.",
+        "Fan is already at maximum speed.",
+        "Fan is already at maximum speed.",
+        "Fan is already at maximum speed.",
+        "Fan is already at maximum speed.",
+        "Fan is already at maximum speed.",
+        "Fan speed is 4",
+        "Fan speed is 3",
+        "Fan speed is 2",
+        "Fan speed is 1",
+        "Fan is already at minimum speed.",
+        "Fan is already at minimum speed.",
+        "Fan is already at minimum speed.",
+        "Fan is already at minimum speed.",
+        "Fan is already at minimum speed.",
+        "Fan has turned off. Speed reset to 1.",
+        "Fan has turned on."
+    ]
+}
